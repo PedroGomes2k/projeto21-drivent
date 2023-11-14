@@ -1,3 +1,6 @@
+import { Ticket } from "@prisma/client";
+import { type } from "os";
+
 export type ApplicationError = {
   name: string;
   message: string;
@@ -11,7 +14,7 @@ export type RequestError = {
   message: string;
 };
 
-export type ViaCEPAdress = {
+export type AddressEnrollment = {
   logradouro: string;
   complemento: string;
   bairro: string;
@@ -19,10 +22,12 @@ export type ViaCEPAdress = {
   uf: string;
 };
 
-export type ErrorViaCep = {
-  erro: boolean;
-}
-
 export type CEP = {
   cep: string;
+};
+
+export type BodyTicket = {
+  ticketTypeId: number
 }
+
+export type CreatePostTicket = Omit<Ticket, 'id' | 'createdAt' | 'updatedAt'>;
