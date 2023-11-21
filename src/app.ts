@@ -3,9 +3,11 @@ import 'express-async-errors';
 import express, { Express } from 'express';
 import cors from 'cors';
 import { handleApplicationErrors } from '@/middlewares';
-import { usersRouter, authenticationRouter, eventsRouter, enrollmentsRouter } from '@/routers';
+import { usersRouter, authenticationRouter, eventsRouter, enrollmentsRouter, ticketsRouter, paymentsRouter, } from '@/routers';
 import { loadEnv, connectDb, disconnectDB } from '@/config';
-import ticketRouter from './routers/tickets-router';
+import hotelsRouter from './routers/hotels-router';
+
+
 
 loadEnv();
 
@@ -18,7 +20,9 @@ app
   .use('/auth', authenticationRouter)
   .use('/event', eventsRouter)
   .use('/enrollments', enrollmentsRouter)
-  .use('/tickets', ticketRouter)
+  .use('/tickets', ticketsRouter)
+  .use('/payments', paymentsRouter)
+  .use('/hotels', hotelsRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {

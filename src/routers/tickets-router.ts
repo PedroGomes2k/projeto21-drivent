@@ -1,15 +1,14 @@
-import { getTickets, getTicketsByTypes, postTickets } from "@/controllers/ticekts-controller";
+import { createTicket, getTicket, getTicketTypes } from "@/controllers";
 import { authenticateToken, validateBody } from "@/middlewares";
-import { verifyTicketSchema } from "@/schemas";
+import { createTicketSchema } from "@/schemas";
 import { Router } from "express";
 
-const ticketRouter = Router()
+const ticketsRouter = Router();
 
-ticketRouter
-
+ticketsRouter
     .all('/*', authenticateToken)
-    .get('/', getTickets)
-    .get('/types', getTicketsByTypes)
-    .post('/', validateBody(verifyTicketSchema), postTickets)
+    .get('/types', getTicketTypes)
+    .get('/', getTicket)
+    .post('/', validateBody(createTicketSchema), createTicket);
 
-export default ticketRouter
+export { ticketsRouter }
