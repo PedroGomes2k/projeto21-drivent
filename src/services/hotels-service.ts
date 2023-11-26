@@ -1,38 +1,43 @@
-import { PaymentRequiredError, notFoundError } from "@/errors"
-import { enrollmentRepository, hotelsRepository, ticketsRepository } from "@/repositories"
+import { TicketStatus } from '@prisma/client';
+import { invalidDataError, notFoundError } from '@/errors';
+import { cannotListHotelsError } from '@/errors/cannot-list-hotels-error';
+import { enrollmentRepository, hotelRepository, ticketsRepository } from '@/repositories';
+
+async function validateUserBooking(userId: number) {
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw notFoundError();
+
+  const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket) throw notFoundError();
+
+  const type = ticket.TicketType;
+
+  if (ticket.status === TicketStatus.RESERVED || type.isRemote || !type.includesHotel) {
+    throw cannotListHotelsError();
+  }
+}
 
 async function getHotels(userId: number) {
+  await validateUserBooking(userId);
 
-    await listHotels(userId)
+  const hotels = await hotelRepository.findHotels();
+  if (hotels.length === 0) throw notFoundError();
 
-    return await hotelsRepository.findHotels()
+  return hotels;
 }
 
-async function getHotel(userId: number, hotelId: number) {
-    await listHotels(userId)
+async function getHotelsWithRooms(userId: number, hotelId: number) {
+  await validateUserBooking(userId);
 
-    const hotel = await hotelsRepository.findHotelById(hotelId)
+  if (!hotelId || isNaN(hotelId)) throw invalidDataError('hotelId');
 
-    if (!hotel) throw notFoundError()
+  const hotelWithRooms = await hotelRepository.findRoomsByHotelId(hotelId);
+  if (!hotelWithRooms) throw notFoundError();
 
-    return hotel
+  return hotelWithRooms;
 }
 
-async function listHotels(userId: number) {
-    const enrollment = await enrollmentRepository.findWithAddressByUserId(userId)
-
-    if (!enrollment) throw notFoundError()
-
-    const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id)
-
-    if (!ticket) throw notFoundError()
-    if (ticket.status === "PAID") throw PaymentRequiredError()
-}
-
-
-
-
-export const hotelsServices = {
-    getHotels,
-    getHotel
-}
+export const hotelsService = {
+  getHotels,
+  getHotelsWithRooms,
+};
