@@ -1,5 +1,5 @@
 import { Ticket, TicketStatus, TicketType } from '@prisma/client';
-import { conflictError, forbianError, notFoundError } from '@/errors';
+import { conflictError, forbiddenError, notFoundError } from '@/errors';
 import { enrollmentRepository, ticketsRepository } from '@/repositories';
 import { bookingRepository } from '@/repositories/booking-repository';
 
@@ -38,7 +38,7 @@ async function updateUserBooking(userId: number, roomId: number, bookingId: numb
   await verifyLengthRoom(room.capacity, reseved.length);
 
   const booking = await bookingRepository.findBooking(bookingId);
-  if (!booking) throw forbianError();
+  if (!booking) throw forbiddenError();
 
   const updateBooking = await bookingRepository.updateBooking(booking.id, roomId);
   return {
@@ -89,12 +89,12 @@ async function verifyReservedRoom(roomId: number) {
 }
 
 async function verifyLengthRoom(room: number, capacity: number) {
-  if (capacity >= room) throw forbianError();
+  if (capacity >= room) throw forbiddenError();
 }
 
 async function verifyUserReserved(userId: number) {
   const verify = await bookingRepository.findBookingByUserId(userId);
-  if (!verify) throw forbianError();
+  if (!verify) throw forbiddenError();
 }
 
 export const bookingService = {

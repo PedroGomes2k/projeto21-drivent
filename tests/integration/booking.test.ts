@@ -73,28 +73,28 @@ describe('Integration of the test get /booking', () => {
   });
 
   describe('When token is valid ', () => {
-    it('Error Forbian(403) when dont have a hotel ', async () => {
+    it('Error Forbian(403) when dont have a hotel  - get /booking', async () => {
       const token = await createCompleteClient(false, false);
 
       const response = await server.get('/booking').set('Authorization', `Bearer ${token.token}`);
       expect(response.status).toBe(httpStatus.FORBIDDEN);
     });
 
-    it('Error Forbian(403) when ticket isRemote', async () => {
+    it('Error Forbian(403) when ticket isRemote - get /booking', async () => {
       const token = await createCompleteClient(true, true);
 
       const response = await server.get('/booking').set('Authorization', `Bearer ${token.token}`);
       expect(response.status).toBe(httpStatus.FORBIDDEN);
     });
 
-    it('Error Forbian(403) when ticketType is Reserved', async () => {
+    it('Error Forbian(403) when ticketType is Reserved - get /booking', async () => {
       const token = await createCompleteClient(false, true, TicketStatus.RESERVED);
 
       const response = await server.get('/booking').set('Authorization', `Bearer ${token.token}`);
       expect(response.status).toBe(httpStatus.FORBIDDEN);
     });
 
-    it('Token is valid - status(201)', async () => {
+    it('Token is valid - status(201) - get /booking', async () => {
       const token = await createCompleteClient(false, true);
 
       const response = await server.get('/booking').set('Authorization', `Bearer ${token.token}`);
@@ -115,73 +115,124 @@ describe('Integration of the test get /booking', () => {
 });
 
 describe('Integration of the test post /booking', () => {
-
-  it('Error Unauthorized(401) when token is not given - get /booking', async () => {
-    const body = { roomId: 2 }
-    const response = (await server.post('/booking').send(body));
+  it('Error Unauthorized(401) when token is not given -post /booking', async () => {
+    const body = { roomId: 2 };
+    const response = await server.post('/booking').send(body);
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
 
   it('Error Unauthorized(401) when token is invalid - post /booking', async () => {
-
-    const body = { roomId: 1 }
+    const body = { roomId: 1 };
     const token = faker.lorem.word();
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  })
+  });
 
   it('Error Unauthorized(401) when dont have session for token - post /booking', async () => {
-
-    const body = { roomId: 1 }
-    const sessionForUser = await createUser()
+    const body = { roomId: 1 };
+    const sessionForUser = await createUser();
 
     const token = jwt.sign({ userId: sessionForUser.id }, process.env.JWT_SECRET);
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  })
+  });
 
   it('Error Unauthorized(401) when token is invalid - post /booking', async () => {
-
-    const body = { roomId: 1 }
+    const body = { roomId: 1 };
     const token = faker.lorem.word();
     const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  })
+  });
 
   describe('When token is valid - post /booking', () => {
-
     it('Error NotFound(404) when dont have a room', async () => {
-      const body = { roomId: 899 }
+      const body = { roomId: 899 };
 
-      const token = await createIncompletClient()
+      const token = await createIncompletClient();
       const response = await server.post('/booking').set('Authorization', `Bearer ${token.token}`).send(body);
-      expect(response.status).toBe(httpStatus.NOT_FOUND)
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
 
-    })
-
-    it('Error Forbiden(403) when room dont have no more capacity', async () => {
-      const room = await createCompleteClient()
-      const token = await createIncompletClient()
-      const body = { roomId: room.room.id }
+    it('Error Forbiden(403) when room dont have no more capacity -post /booking', async () => {
+      const room = await createCompleteClient();
+      const token = await createIncompletClient();
+      const body = { roomId: room.room.id };
 
       const response = await server.post('/booking').set('Authorization', `Bearer ${token.token}`).send(body);
-      expect(response.status).toBe(httpStatus.FORBIDDEN)
+      expect(response.status).toBe(httpStatus.FORBIDDEN);
+    });
 
-    })
-  })
+    it('Response Status(200) OK -post /booking', async () => {
+      const created = await createIncompletClient();
+      const body = { roomId: created.room.id };
+      const response = await server.post('/booking').set('Authorization', `Bearer ${created.token}`).send(body);
+      expect(response.status).toBe(httpStatus.OK);
+    });
+  });
+});
 
-})
+describe('When token is valid - put /booking', () => {
+  it('Error Unauthorized(401) when token is not given - put /booking', async () => {
+    const body = { roomId: 1 };
+    const response = await server.put('/booking/1').send(body);
 
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
 
-describe('When token is valid - post /booking', () => {
+  it('Error Unauthorized(401) when token is invalid - put /booking', async () => {
+    const body = { roomId: 1 };
+    const token = faker.lorem.word();
 
-  it('', async () => {
+    const response = await server.put('/booking/1').set('Authorization', `Bearer ${token}`).send(body);
 
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
 
+  it('Error Unauthorized(401) when dont have session for token - put /booking', async () => {
+    const body = { roomId: 1 };
+    const sessionForUser = await createUser();
 
-  })
-})
+    const token = jwt.sign({ userId: sessionForUser.id }, process.env.JWT_SECRET);
+    const response = await server.post('/booking/1').set('Authorization', `Bearer ${token}`).send(body);
 
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe('When token is valid - put /booking', () => {
+    it('Error NotFound(404) when dont have a room - put /booking', async () => {
+      const created = await createCompleteClient();
+      const body = { roomId: 998192 };
+      const token = await createIncompletClient();
+      const response = await server
+        .put(`/booking/${created.booking.id}`)
+        .set('Authorization', `Bearer ${token.token}`)
+        .send(body);
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it('Error Forbiden(403) when room dont have no more capacity - put /booking', async () => {
+      const room = await createCompleteClient();
+      const token = await createIncompletClient();
+      const body = { roomId: room.room.id };
+      const response = await server
+        .put(`/booking/${token.room.id}`)
+        .set('Authorization', `Bearer ${token.token}`)
+        .send(body);
+      expect(response.status).toBe(httpStatus.FORBIDDEN);
+    });
+
+    it('Response Status(200) OK -put /booking', async () => {
+      const created = await createCompleteClient();
+      const room = await createIncompletClient();
+      const body = { roomId: room.room.id };
+      const response = await server
+        .put(`/booking/${created.booking.id}`)
+        .set('Authorization', `Bearer ${created.token}`)
+        .send(body);
+      expect(response.status).toBe(httpStatus.OK);
+    });
+  });
+});

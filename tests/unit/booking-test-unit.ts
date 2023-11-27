@@ -11,7 +11,7 @@ import {
 } from './mocks.ts';
 import { enrollmentRepository, ticketsRepository } from '@/repositories';
 import { bookingService } from '@/services';
-import { forbianError } from '@/errors/forbian-error.js';
+import { forbiddenError } from '@/errors/forbidden-error.js';
 import { bookingRepository } from '@/repositories/booking-repository.js';
 
 beforeEach(() => {
@@ -68,7 +68,7 @@ describe('Unit test for service /booking', () => {
     jest.spyOn(bookingService, 'findTicketByEnrollment').mockResolvedValueOnce(mockData);
 
     const promise = bookingService.verifyUserBooking(1);
-    expect(promise).rejects.toEqual(forbianError());
+    expect(promise).rejects.toEqual(forbiddenError());
   });
 
   it('Error not found when ticket is invalid', async () => {
