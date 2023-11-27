@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
 import { Booking } from '@prisma/client';
 
-export const BookingMock = (): Booking => {
+export const generateBookingMock = (): Booking => {
   return {
     id: faker.datatype.number(),
     userId: faker.datatype.number(),

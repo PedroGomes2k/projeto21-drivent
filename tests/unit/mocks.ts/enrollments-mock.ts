@@ -24,7 +24,7 @@ export const enrollmentMock = {
   updatedAt: new Date(),
 };
 
-export const mockEnrollment2 = {
+export const enrollmentMock2 = {
   id: 2,
   name: 'Nome do Cliente 2',
   cpf: '778.654.321-00',

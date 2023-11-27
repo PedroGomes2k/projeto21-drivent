@@ -77,7 +77,7 @@ async function invalidBooking(ticket: Ticket, status: TicketType) {
 async function findRoomById(roomId: number) {
   const room = await bookingRepository.findRoom(roomId);
 
-  if (!room) throw notFoundError;
+  if (!room) throw notFoundError();
 
   return room;
 }
@@ -94,11 +94,19 @@ async function verifyLengthRoom(room: number, capacity: number) {
 
 async function verifyUserReserved(userId: number) {
   const verify = await bookingRepository.findBookingByUserId(userId);
-  if (!verify) throw forbianError;
+  if (!verify) throw forbianError();
 }
 
 export const bookingService = {
   getBooking,
   newBooking,
   updateUserBooking,
+  findEnrollmentByUserId,
+  verifyLengthRoom,
+  verifyUserReserved,
+  verifyUserBooking,
+  findTicketByEnrollment,
+  invalidBooking,
+  findRoomById,
+  verifyReservedRoom,
 };

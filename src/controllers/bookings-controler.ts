@@ -1,6 +1,5 @@
 import { Response } from 'express';
 import httpStatus from 'http-status';
-import { number } from 'joi';
 import { AuthenticatedRequest } from '@/middlewares';
 import { bookingService } from '@/services';
 
