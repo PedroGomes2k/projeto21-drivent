@@ -1,14 +1,13 @@
-import { getBooking, postBooking, updateBooking } from "@/controllers/bookings-controler";
-import { authenticateToken } from "@/middlewares";
-import { Router } from "express";
+import { Router } from 'express';
+import { getBooking, postBooking, updateBooking } from '@/controllers/bookings-controler';
+import { authenticateToken } from '@/middlewares';
 
-const bookingRouter = Router()
-
+const bookingRouter = Router();
 
 bookingRouter
-    .all('/*', authenticateToken)
-    .get('/', getBooking)
-    .post('/', postBooking)
-    .put('/:bookingId', updateBooking)
+  .all('/*', authenticateToken)
+  .get('/', getBooking)
+  .post('/', postBooking)
+  .put('/:bookingId', updateBooking);
 
-export  {bookingRouter}
+export { bookingRouter };

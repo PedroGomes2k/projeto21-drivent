@@ -1,3 +1,3 @@
-npm run buildimport { loadEnv } from '@/config';
+import { loadEnv } from '@/config';
 
 loadEnv();

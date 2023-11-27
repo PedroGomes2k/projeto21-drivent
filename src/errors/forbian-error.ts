@@ -1,8 +1,8 @@
-import { ApplicationError } from "@/protocols";
+import { ApplicationError } from '@/protocols';
 
 export function forbianError(): ApplicationError {
-    return {
-        name: "ForbianError",
-        message: "Is not more vacancy for this room"
-    }
+  return {
+    name: 'ForbianError',
+    message: 'Is not more vacancy for this room',
+  };
 }
